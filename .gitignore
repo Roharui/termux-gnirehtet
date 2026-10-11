@@ -1,2 +1,5 @@
 gnirehtet-repo
 termux-gnirehtet.tar.gz
+
+# Local server configuration
+.env

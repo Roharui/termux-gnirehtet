@@ -37,7 +37,7 @@ cd termux-gnirehtet
 5. 휴대폰에서 `adb devices`를 실행해 기기 번호 옆에 `device`가 나오는지 확인합니다.
    처음 인식에는 1~2분 걸릴 수 있습니다.
 
-## 서버 트래픽만 공유
+## 실행 모드
 
 처음 한 번 예시 설정을 복사하세요. 기존 `.env`가 있다면 그대로 편집합니다.
 
@@ -50,25 +50,32 @@ nano .env
 실제 서버 주소로 변경합니다. 프로토콜, 포트, 경로는 넣지 않습니다.
 
 ```dotenv
-SERVER_HOST=api.example.com
+ALLOWED_HOSTS="
+api.example.com
+files.example.com
+192.0.2.10
+"
 DNS_IP=1.1.1.1
 ```
 
 | 설정 | 설명 |
 | --- | --- |
-| `SERVER_HOST` | 서버 도메인 또는 IPv4 주소 |
+| `ALLOWED_HOSTS` | 허용 도메인 또는 IPv4 주소 목록. 공백, 쉼표, 줄바꿈으로 구분 |
+| `SERVER_HOST` | 이전 설정과의 호환용. `ALLOWED_HOSTS`가 비어 있을 때 사용 |
 | `DNS_IP` | 태블릿에서 사용할 DNS 서버의 IPv4 주소 |
 | `SERVER_IP` | 이전 설정과의 호환용. `SERVER_HOST`가 비어 있을 때 사용 |
 
 ```bash
-bash ./run-server-only.sh
+./run.sh
 ```
 
 기존 gnirehtet 실행은 먼저 Ctrl+C로 종료하세요. 스크립트는 기존 클라이언트를
 중지한 뒤 새 경로로 시작합니다. 태블릿에 VPN 승인 창이 나오면 허용합니다.
 서버에는 `https://api.example.com` 등 기존 주소로 접속합니다.
-다른 설정 파일을 쓰려면 `bash ./run-server-only.sh /경로/다른.env`로 실행하세요.
+다른 설정 파일을 쓰려면 `./run.sh /경로/다른.env`로 실행하세요.
 `.env`는 Bash에서 읽으므로 `KEY=value` 형식을 사용하고 신뢰할 수 있는 파일만 사용합니다.
+
+`--all`은 `.env` 없이 실행할 수 있으며 설정 파일을 읽지 않습니다.
 
 ### 경로와 DNS 동작
 
@@ -84,10 +91,13 @@ bash ./run-server-only.sh
 - 다른 목적지는 태블릿의 기존 Wi-Fi/모바일 연결을 사용할 수 있습니다.
   휴대폰 자체 통신은 제한하지 않습니다.
 
+기본 실행(`./run.sh` 또는 `./run.sh --env`)은 `.env`에 지정한 주소만 USB로 전달합니다.
+목록의 중복 IP는 한 번만 추가합니다. 도메인 개수에 별도 제한은 없습니다.
+
 중지는 Ctrl+C입니다. 전체 트래픽을 USB로 공유하려면 다음처럼 실행하세요.
 
 ```bash
-./gnirehtet run
+./run.sh --all
 ```
 
 ## 연결 문제 확인
